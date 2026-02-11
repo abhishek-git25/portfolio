@@ -1,0 +1,16 @@
+:root {
+  --bg: #020202;
+  --neon: #00ff88;
+  --text: #b6ffdc;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* Custom utilities */
+.glow {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+}

@@ -1,0 +1,30 @@
+import { motion } from "framer-motion"
+import { useState } from "react"
+
+const Hero = () => {
+    // const [state, setstate] = useState(initialState)
+    return (
+        <motion.section
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="h-[calc(100vh-90px)] flex flex-col justify-center  items-center max-w-7xl text-center mx-auto"
+        >
+            {/* <p className="text-[var(--neon)]">{"> booting portfolio..."}</p>
+            <p className="text-[var(--neon)]">{"> loading frontend_engine..."}</p>
+            <p className="text-[var(--neon)] mb-6">{"> access granted ✔"}</p> */}
+
+            <h1 className="text-4xl md:text-5xl font-bold text-[var(--neon)]">
+                Abhishek Yadav
+            </h1>
+            <p className="mt-3 text-lg">
+                Frontend Engineer | Gen-AI Developer
+            </p>
+            <p className="mt-8 text-lg">
+                I am a Software Engineer with expertise in frontend development using React, JavaScript, TypeScript, and modern UI frameworks, along with hands-on experience in Gen-AI development,
+                including LLM integration, embeddings, RAG pipelines, and AI-powered features.
+            </p>
+        </motion.section>
+    )
+}
+
+export default Hero
