@@ -20,8 +20,8 @@ const Hero = () => {
                 Frontend Engineer | Gen-AI Developer
             </p>
             <p className="mt-8 text-lg">
-                I am a Software Engineer with expertise in frontend development using React, JavaScript, TypeScript, and modern UI frameworks, along with hands-on experience in Gen-AI development,
-                including LLM integration, embeddings, RAG pipelines, and AI-powered features.
+                I am a Software Engineer with expertise in frontend development using <span className="text-[var(--neon)] underline underline-offset-4">React</span>, <span className="text-[var(--neon)] underline underline-offset-4">JavaScript</span>, <span className="text-[var(--neon)] underline underline-offset-4">TypeScript</span>,  and modern UI frameworks, along with hands-on experience in Gen-AI development,
+                including <span className="text-[var(--neon)] underline underline-offset-4">LLM integration</span>, <span className="text-[var(--neon)] underline underline-offset-4">embeddings</span>, <span className="text-[var(--neon)] underline underline-offset-4">RAG pipelines</span>, and <span className="text-[var(--neon)] underline underline-offset-4">AI-powered features</span>.
             </p>
         </motion.section>
     )
