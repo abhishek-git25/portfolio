@@ -7,15 +7,32 @@ const Footer = () => {
     return (
         <footer className='sticky  bottom-12 pr-10'>
             <nav className='flex items-center justify-end gap-8'>
-                <Link to={"#"} className="hover:text-[var(--neon)]">
+                <a
+                    href="https://www.linkedin.com/in/abhishek-yadav-b364111aa/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-(--neon) transition-colors duration-300"
+                >
                     <FaLinkedin size={20} />
-                </Link>
-                <Link to={"#"} className="hover:text-[var(--neon)]">
+                </a>
+
+                <a
+                    href="https://github.com/abhishek-git25"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-(--neon) transition-colors duration-300"
+                >
                     <FaGithub size={20} />
-                </Link>
-                <Link to={"#"} className="hover:text-[var(--neon)]">
+                </a>
+
+                <a
+                    href="https://x.com/Abhishe10857102"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-(--neon) transition-colors duration-300"
+                >
                     <FaXTwitter size={20} />
-                </Link>
+                </a>
             </nav>
         </footer>
     )

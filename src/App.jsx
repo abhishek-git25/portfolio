@@ -1,22 +1,14 @@
-import Footer from './components/Footer'
-import Header from './components/Header'
-import Hero from './components/Hero'
-
-
+import ThreeBackground from './components/ThreeBackground'
+import AppRouter from './routes/AppRouter'
 
 function App() {
   return (
-    <>
-      <Header />
-      <div className='relative m-8 overflow-hidden'>
-        <Hero />
-        <div className='fixed bg-(--neon) w-full h-7.5 top-0 left-0' />
-        <div className='fixed bg-(--neon) w-full h-7.5 top-auto left-0 bottom-0' />
-        <div className='fixed bg-(--neon) w-7.5 h-full top-0 left-0' />
-        <div className='fixed bg-(--neon) w-7.5 h-full top-0 left-auto right-0' />
-      </div>
-      <Footer />
-    </>
+    <div className="min-h-screen ">
+      <ThreeBackground />
+      <main>
+        <AppRouter />
+      </main>
+    </div>
   )
 }
 
