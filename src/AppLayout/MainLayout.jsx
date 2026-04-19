@@ -7,8 +7,6 @@ export default function MainLayout() {
 
     const location = useLocation();
 
-    console.log(location.pathname, "10");
-
     return (
         <>
             {/* {location.pathname !== "/ask-ai" && <Header />} */}

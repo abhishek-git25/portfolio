@@ -4,7 +4,8 @@ import {
   FaArrowLeft,
   FaPaperPlane,
   FaRobot,
-  FaUser
+  FaUser,
+  FaExclamationTriangle
 } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
@@ -17,41 +18,30 @@ const AIChatbot = () => {
       timestamp: new Date()
     }
   ])
-  
+
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [error, setError] = useState(null)
+  const [lastUserMessage, setLastUserMessage] = useState('')
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const navigate = useNavigate()
 
-  const predefinedResponses = {
-    greeting: [
-      "Hello! I'm here to help you learn about Abhishek. You can ask me about his skills, experience, projects, or how to contact him.",
-      "Hi there! I'm Abhishek's AI assistant. Feel free to ask me anything about his professional background or expertise."
-    ],
-    skills: [
-      "Abhishek is a skilled Software Engineer with expertise in React, TypeScript, Next.js, and Three.js. He has 4+ years of experience in frontend development and specializes in building high-performance, accessible web applications.",
-      "His technical skills include React ecosystem, modern UI frameworks, and Gen-AI development with LLM integration and RAG pipelines. He's also experienced in VAPT and security best practices."
-    ],
-    experience: [
-      "Abhishek currently works as a Software Engineer - Frontend at Planet Green Solution in Dubai, UAE. Previously, he worked at Augurs Technologies and Rozgaar India, gaining 4+ years of diverse experience.",
-      "His recent highlight project was for the UAE Ministry, where he reduced VAPT vulnerabilities from 40% to 0% and achieved a 50% performance boost through optimization."
-    ],
-    projects: [
-      "Abhishek has worked on 10+ projects including enterprise applications, government systems, and innovative web solutions. His recent work involves creating reusable component libraries that reduced development time by 30%.",
-      "He specializes in building scalable React applications with modern architectures, focusing on performance, accessibility, and security."
-    ],
-    education: [
-      "Abhishek holds a Bachelor of Computer Application (BCA) degree from Shri Ramswaroop Memorial University (2018-2021)."
-    ],
-    contact: [
-      "You can reach Abhishek via email at yadavabhi050198@gmail.com, phone at +91 9336559224, or connect with him on LinkedIn. He's currently based in Dubai, UAE.",
-      "The best ways to contact Abhishek are through email (yadavabhi050198@gmail.com) or LinkedIn. He's always open to discussing new opportunities and collaborations."
-    ],
-    default: [
-      "That's an interesting question! I can tell you about Abhishek's skills, experience, projects, education, or how to contact him. What specific area would you like to explore?",
-      "I'm here to help you learn about Abhishek. Feel free to ask about his technical expertise, professional background, or how to get in touch with him."
-    ]
+  const API_BASE_URL = 'https://portfolio-backend-361l.onrender.com'
+
+  // Test function to check API availability
+  const testAPIConnection = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      return response.ok
+    } catch (error) {
+      return false
+    }
   }
 
   const scrollToBottom = () => {
@@ -62,52 +52,88 @@ const AIChatbot = () => {
     scrollToBottom()
   }, [messages])
 
-  const generateResponse = (userInput) => {
-    const input = userInput.toLowerCase()
-    
-    if (input.includes('skill') || input.includes('tech') || input.includes('expertise')) {
-      return predefinedResponses.skills[Math.floor(Math.random() * predefinedResponses.skills.length)]
-    } else if (input.includes('experience') || input.includes('work') || input.includes('job')) {
-      return predefinedResponses.experience[Math.floor(Math.random() * predefinedResponses.experience.length)]
-    } else if (input.includes('project') || input.includes('portfolio') || input.includes('work')) {
-      return predefinedResponses.projects[Math.floor(Math.random() * predefinedResponses.projects.length)]
-    } else if (input.includes('education') || input.includes('degree') || input.includes('university')) {
-      return predefinedResponses.education[Math.floor(Math.random() * predefinedResponses.education.length)]
-    } else if (input.includes('contact') || input.includes('email') || input.includes('phone') || input.includes('reach')) {
-      return predefinedResponses.contact[Math.floor(Math.random() * predefinedResponses.contact.length)]
-    } else if (input.includes('hello') || input.includes('hi') || input.includes('hey')) {
-      return predefinedResponses.greeting[Math.floor(Math.random() * predefinedResponses.greeting.length)]
-    } else {
-      return predefinedResponses.default[Math.floor(Math.random() * predefinedResponses.default.length)]
+  // API call function
+  const callAPI = async (message) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: message,
+          user_id: 'portfolio_visitor',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data.response || data.message || data.reply
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        console.error(error);
+      }
+      throw error
     }
   }
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return
 
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
-      content: inputValue,
-      timestamp: new Date()
+  const handleSendMessage = async (retryMessage = null) => {
+    const messageToSend = typeof retryMessage === "String" ? retryMessage : inputValue
+
+    console.log(inputValue, messageToSend, "87")
+
+    if (!messageToSend.trim()) return
+
+    if (!retryMessage) {
+      const userMessage = {
+        id: Date.now(),
+        type: 'user',
+        content: messageToSend,
+        timestamp: new Date()
+      }
+
+      setMessages(prev => [...prev, userMessage])
+      setInputValue('')
     }
 
-    setMessages(prev => [...prev, userMessage])
-    setInputValue('')
+    setLastUserMessage(messageToSend)
     setIsTyping(true)
+    setError(null)
 
-    // Simulate bot thinking time
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      // Call your Python API
+      const botResponseContent = await callAPI(messageToSend)
 
-    const botResponse = {
-      id: Date.now() + 1,
-      type: 'bot',
-      content: generateResponse(inputValue),
-      timestamp: new Date()
+      const botResponse = {
+        id: Date.now() + 1,
+        type: 'bot',
+        content: botResponseContent,
+        timestamp: new Date()
+      }
+
+      setMessages(prev => [...prev, botResponse])
+      setInputValue("");
+    } catch (error) {
+      console.error('Error calling API:', error)
+
+      // Show error message to user
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'bot',
+        content: "Sorry, I'm having trouble connecting right now. Please try again later or contact Abhishek directly via email.",
+        timestamp: new Date(),
+        isError: true
+      }
+
+      setMessages(prev => [...prev, errorMessage])
+      setError('Failed to connect to AI service')
+    } finally {
+      setIsTyping(false)
     }
-
-    setMessages(prev => [...prev, botResponse])
-    setIsTyping(false)
   }
 
   const handleKeyPress = (e) => {
@@ -146,7 +172,7 @@ const AIChatbot = () => {
       className="min-h-screen bg-[#0a0a0a] flex flex-col"
     >
       {/* Header */}
-      <motion.header 
+      <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
@@ -180,7 +206,7 @@ const AIChatbot = () => {
       </motion.header>
 
       {/* Chat Messages */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
@@ -227,31 +253,39 @@ const AIChatbot = () => {
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div className={`flex gap-3 max-w-2xl ${message.type === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.type === 'user' 
-                      ? 'bg-gradient-to-r from-[var(--neon)] to-purple-600' 
-                      : 'bg-gray-800'
-                  }`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.type === 'user'
+                    ? 'bg-gradient-to-r from-[var(--neon)] to-purple-600'
+                    : 'bg-gray-800'
+                    }`}>
                     {message.type === 'user' ? (
                       <FaUser className="text-white text-sm" />
+                    ) : message.isError ? (
+                      <FaExclamationTriangle className="text-red-500 text-sm" />
                     ) : (
                       <FaRobot className="text-[var(--neon)] text-sm" />
                     )}
                   </div>
-                  <div className={`px-4 py-3 rounded-2xl ${
-                    message.type === 'user'
-                      ? 'bg-gradient-to-r from-[var(--neon)]/20 to-purple-600/20 border border-[var(--neon)]/30'
+                  <div className={`px-4 py-3 rounded-2xl ${message.type === 'user'
+                    ? 'bg-gradient-to-r from-[var(--neon)]/20 to-purple-600/20 border border-[var(--neon)]/30'
+                    : message.isError
+                      ? 'bg-red-900/20 border border-red-800/50'
                       : 'bg-gray-900/50 border border-gray-800'
-                  }`}>
-                    <p className={`text-sm leading-relaxed ${
-                      message.type === 'user' ? 'text-white' : 'text-gray-300'
                     }`}>
+                    <p className={`text-sm leading-relaxed ${message.type === 'user' ? 'text-white' : message.isError ? 'text-red-300' : 'text-gray-300'
+                      }`}>
                       {message.content}
                     </p>
-                    <p className={`text-xs mt-2 ${
-                      message.type === 'user' ? 'text-[var(--neon)]/70' : 'text-gray-500'
-                    }`}>
+                    <p className={`text-xs mt-2 ${message.type === 'user' ? 'text-[var(--neon)]/70' : message.isError ? 'text-red-500' : 'text-gray-500'
+                      }`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {message.isError && (
+                        <button
+                          onClick={() => handleSendMessage(lastUserMessage)}
+                          className="ml-2 text-xs underline hover:text-red-400 transition-colors"
+                        >
+                          Retry
+                        </button>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -320,8 +354,9 @@ const AIChatbot = () => {
               Send
             </motion.button>
           </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">
-            Powered by AI • Responses are based on Abhishek's profile information
+          <p className="text-xs text-gray-500 mt-2 text-center flex items-center justify-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${error ? 'bg-red-500' : 'bg-green-500'} ${!error && !isTyping ? 'animate-pulse' : ''}`} />
+            {error ? 'Connection error' : 'Connected to AI'} • Powered by Python API
           </p>
         </div>
       </motion.footer>
