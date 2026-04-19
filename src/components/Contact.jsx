@@ -1,13 +1,14 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
-import { 
-  FaEnvelope, 
-  FaLinkedin, 
-  FaGithub, 
+import {
+  FaEnvelope,
+  FaLinkedin,
+  FaGithub,
   FaPaperPlane,
   FaMapMarkerAlt,
   FaPhone
 } from "react-icons/fa"
+import { Link } from "react-router-dom"
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -15,9 +16,11 @@ const Contact = () => {
     email: '',
     message: ''
   })
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const MotionLink = motion(Link)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,13 +55,13 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     setIsSubmitting(false)
     setIsSubmitted(true)
-    
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setFormData({ name: '', email: '', message: '' })
@@ -138,7 +141,7 @@ const Contact = () => {
               <h3 className="text-2xl font-bold text-[var(--neon)] mb-6">
                 Send a Message
               </h3>
-              
+
               {isSubmitted ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -234,7 +237,7 @@ const Contact = () => {
               <h3 className="text-2xl font-bold text-[var(--neon)] mb-6">
                 Contact Information
               </h3>
-              
+
               <div className="space-y-6">
                 {contactLinks.map((link, index) => (
                   <motion.div
@@ -268,7 +271,7 @@ const Contact = () => {
               <div className="mt-8 pt-8 border-t border-gray-800">
                 <h4 className="text-white font-medium mb-4">Let's Connect</h4>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  I'm always open to discussing new opportunities, creative ideas, or potential partnerships. 
+                  I'm always open to discussing new opportunities, creative ideas, or potential partnerships.
                   Whether you have a question or just want to say hi, feel free to reach out!
                 </p>
               </div>
@@ -282,7 +285,7 @@ const Contact = () => {
               <h3 className="text-2xl font-bold text-[var(--neon)] mb-6">
                 Quick Links
               </h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -295,7 +298,7 @@ const Contact = () => {
                 >
                   About Me
                 </motion.button>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -307,7 +310,7 @@ const Contact = () => {
                 >
                   Experience
                 </motion.button>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -319,15 +322,14 @@ const Contact = () => {
                 >
                   Home
                 </motion.button>
-                
-                <motion.button
+                <MotionLink to="/ask-ai"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => window.location.href = '/ask-ai'}
-                  className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white hover:border-[var(--neon)] transition-all duration-300"
+                  className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-center hover:border-[var(--neon)] transition-all duration-300"
                 >
                   Ask AI
-                </motion.button>
+
+                </MotionLink>
               </div>
             </motion.div>
           </motion.div>

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { FaGithub, FaLinkedin, FaEnvelope, FaArrowDown } from "react-icons/fa"
+import { Link } from "react-router-dom"
 
 const Hero = () => {
     const [isHovered, setIsHovered] = useState(false)
@@ -111,16 +112,15 @@ const Hero = () => {
                     variants={itemVariants}
                     className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
                 >
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-8 py-3 bg-gradient-to-r from-[var(--neon)] to-purple-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[var(--neon)]/25 transition-all duration-300"
-                        onClick={() => {
-                            window.location.href = '/ask-ai'
-                        }}
-                    >
-                        Ask AI
-                    </motion.button>
+                    <Link to={'/ask-ai'} >
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="px-8 py-3 bg-gradient-to-r from-[var(--neon)] to-purple-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[var(--neon)]/25 transition-all duration-300"
+                        >
+                            Ask AI
+                        </motion.button>
+                    </Link>
 
                     <motion.button
                         whileHover={{ scale: 1.05 }}
